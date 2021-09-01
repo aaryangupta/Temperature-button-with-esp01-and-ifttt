@@ -1,0 +1,51 @@
+#include <ESP8266WiFi.h>
+#include "AnotherIFTTTWebhook.h"
+#include <DHT.h>;
+
+// Set WiFi credentials
+const char* ssid = "Red";
+const char* password = "redmi***";
+ 
+ 
+// Set IFTTT Webhooks event name and key
+#define IFTTT_Key "dVF1d7XZmREkbRBW-UBKDc"
+
+#define IFTTT_Event "esp01test"// you have chosen
+#define DHTTYPE DHT11
+#define DHTPIN  2
+
+DHT dht(DHTPIN, DHTTYPE,11);
+float temp; 
+String tString = "999";
+char tChar[7]; 
+
+void setup() {
+  Serial.begin(9600); // Serial output only for information, you can also remove all Serial commands
+   dht.begin();
+  // Connecting to WiFi...
+  Serial.print("Connecting to ");
+  WiFi.begin(ssid, password);
+  Serial.print(ssid);
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(100);
+    Serial.print(".");
+  }
+ 
+  // Connected to WiFi
+  Serial.println();
+  Serial.print("Connected! IP address: ");
+  Serial.println(WiFi.localIP());
+
+  temp = dht.readTemperature();         // Read Temperature (Degree Celsius)
+  Serial.print("Initial Temp: ");
+  tString = String(temp);
+  tString.toCharArray(tChar, tString.length());
+  
+  // Send Webook to IFTTT
+  send_webhook(IFTTT_Event,IFTTT_Key,tChar,"25","value 3");
+}
+ 
+void loop() {
+  // we have no repeated action in this example
+}
